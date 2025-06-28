@@ -7,11 +7,13 @@ import random
 import pandas as pd
 import numpy as np
 
+# ✅ Smart filter for real memes only
 def is_meme_image(url):
     meme_hosts = ["imgur", "me.me", "imgflip", "9gag", "memedroid"]
     keywords = ["meme", "funny", "humor", "caption", "template"]
     return any(host in url.lower() for host in meme_hosts) or any(word in url.lower() for word in keywords)
 
+# ✅ Imgur meme fetcher
 def get_imgur_memes(query):
     headers = {"User-Agent": "Mozilla/5.0"}
     encoded_query = urllib.parse.quote_plus(query + " meme")
@@ -38,6 +40,7 @@ def get_imgur_memes(query):
         st.warning(f"⚠️ Imgur error: {e}")
         return []
 
+# ✅ Bing fallback meme fetcher
 def get_bing_memes(query):
     headers = {"User-Agent": "Mozilla/5.0"}
     encoded_query = urllib.parse.quote_plus(query + " meme")
@@ -52,11 +55,11 @@ def get_bing_memes(query):
         st.warning(f"⚠️ Bing error: {e}")
         return []
 
-
+# ✅ MemeStream main app
 def main():
     st.set_page_config(page_title="MemeStream", page_icon="🌊", layout="wide")
 
-
+    # ⭐ Top-right review button
     st.markdown("""
         <style>
         .review-button {
@@ -109,7 +112,7 @@ def main():
         else:
             st.warning("😕 No memes found. Try another keyword.")
 
-
+    # Meme Mood Graph + Trending Topics
     if not query_to_search:
         st.subheader("📈 People's Meme Mood")
         mood_labels = ["Funny 🤣", "Sad 😭", "Angry 😠", "Weird 🌀"]
@@ -137,44 +140,8 @@ def main():
                         st.rerun()
 
 
-        music_memes = get_imgur_memes("music memes")[:15]
-        if music_memes:
-            music_html = """
-            <style>
-            .music-container {
-                overflow: hidden;
-                white-space: nowrap;
-                box-sizing: border-box;
-                padding: 10px;
-                background: #000;
-                border-radius: 10px;
-                margin-top: 20px;
-            }
-            .music-track {
-                display: inline-block;
-                animation: scroll-right 45s linear infinite;
-            }
-            .music-track img {
-                height: 110px;
-                margin-left: 20px;
-                border-radius: 10px;
-                box-shadow: 0 0 6px #00000088;
-            }
-            @keyframes scroll-right {
-                0% { transform: translateX(-100%); }
-                100% { transform: translateX(100%); }
-            }
-            </style>
-            <div class="music-container">
-                <div class="music-track">
-            """
-            for url in music_memes:
-                music_html += f'<img src="{url}" alt="music meme" />'
-            music_html += "</div></div>"
-            st.markdown("### 🎵 Music Meme Ticker")
-            st.markdown(music_html, unsafe_allow_html=True)
-
     else:
+        # Show trending when search is active
         st.subheader("🔥 Trending Meme Topics")
         trending_topics = ["Random", "Surprise me", "Cat memes", "Distracted dog",
                            "NFSW", "Shaun The Sheep", "Change My Mind", "sus world", "MafuMafu"]
