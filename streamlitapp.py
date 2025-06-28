@@ -52,7 +52,7 @@ def get_bing_memes(query):
     try:
         res = requests.get(url, headers=headers)
         res.raise_for_status()
-        matches = re.findall(r'murl&quot;:&quot;(https://[^\"]+\.(?:jpg|jpeg|png))', res.text)
+        matches = re.findall(r'murl&quot;:&quot;(https://[^"]+\.(?:jpg|jpeg|png))', res.text)
         meme_urls = [url for url in matches if is_meme_image(url)][:]
         return meme_urls
     except Exception as e:
@@ -71,26 +71,26 @@ def show_mood_chart():
     })
     st.bar_chart(mood_df.set_index("Mood"), use_container_width=True)
 
-# ✅ Music Meme Ticker
-def show_music_meme_ticker():
-    music_memes = get_imgur_memes("music memes")[:24]
-    if music_memes:
+# ✅ Random Meme Ticker (Live)
+def show_random_meme_ticker():
+    random_memes = get_imgur_memes("funny")[:14]
+    if random_memes:
         ticker_html = """
         <style>
-        .music-container {
+        .random-container {
             overflow: hidden;
             white-space: nowrap;
             box-sizing: border-box;
             padding: 10px;
-            background: #111;
+            background: #222;
             border-radius: 10px;
             margin-top: 30px;
         }
-        .music-track {
+        .random-track {
             display: inline-block;
-            animation: scroll-right 60s linear infinite;
+            animation: scroll-right 50s linear infinite;
         }
-        .music-track img {
+        .random-track img {
             height: 110px;
             margin-left: 20px;
             border-radius: 10px;
@@ -101,14 +101,14 @@ def show_music_meme_ticker():
             100% { transform: translateX(100%); }
         }
         </style>
-        <div class="music-container">
-            <div class="music-track">
+        <div class="random-container">
+            <div class="random-track">
         """
-        for url in music_memes:
-            ticker_html += f'<img src="{url}" alt="music meme" />'
+        for url in random_memes:
+            ticker_html += f'<img src="{url}" alt="random meme" />'
         ticker_html += "</div></div>"
 
-        st.markdown("### 🎵 Music Meme Ticker")
+        st.markdown("### 🐟 Meme Parade")
         st.markdown(ticker_html, unsafe_allow_html=True)
 
 # ✅ MemeStream main app
@@ -180,7 +180,7 @@ def main():
                             topic = random.choice(["funny", "relatable", "programming", "exam", "tamil", "monday meme"])
                         st.session_state.search_query = topic
                         st.rerun()
-        show_music_meme_ticker()
+        show_random_meme_ticker()
 
 if __name__ == "__main__":
     main()
