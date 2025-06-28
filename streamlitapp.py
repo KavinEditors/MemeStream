@@ -6,12 +6,11 @@ import re
 import random
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 
 # ✅ Smart filter for real memes only
 def is_meme_image(url):
     meme_hosts = ["imgur", "me.me", "imgflip", "9gag", "memedroid"]
-    keywords = ["meme", "funny", "humor", "caption", "template", "car"]
+    keywords = ["meme", "funny", "humor", "caption", "template"]
     return any(host in url.lower() for host in meme_hosts) or any(word in url.lower() for word in keywords)
 
 # ✅ Imgur meme fetcher
@@ -36,7 +35,7 @@ def get_imgur_memes(query):
                 src = "https://imgur.com" + src
             if src.endswith((".jpg", ".jpeg", ".png")) and is_meme_image(src):
                 image_urls.append(src)
-            if len(image_urls) >= 50:
+            if len(image_urls) >= 40:
                 break
         return image_urls
     except Exception as e:
@@ -104,7 +103,16 @@ def main():
         col1, col2 = st.columns([1.2, 2.5])
         with col1:
             st.markdown("### 😎 Meme Mood")
-            st.bar_chart(mood_df.set_index("Mood"), use_container_width=True)
+            import matplotlib.pyplot as plt
+            fig, ax = plt.subplots(figsize=(4, 2.5))
+            moods = mood_df["Mood"]
+            values = mood_df["Percentage"]
+            ax.barh(moods, values, color="skyblue")
+            ax.set_xlabel("Mood Intensity (%)")
+            ax.invert_yaxis()
+            for i, v in enumerate(values):
+                ax.text(v + 1, i, f"{v}%", va='center', fontsize=8)
+            st.pyplot(fig)
 
         with col2:
             st.subheader("🔥 Trending Meme Topics")
@@ -136,8 +144,8 @@ def main():
                     st.session_state.search_query = topic
                     st.rerun()
 
-    # 🎬 Meme Ticker (right to left)
-    ticker_memes = get_imgur_memes("funny")[:56]
+    # 🎬 Meme Ticker (scrolling banner)
+    ticker_memes = get_imgur_memes("funny")[:15]
     if ticker_memes:
         ticker_html = """
         <style>
@@ -172,10 +180,8 @@ def main():
             ticker_html += f'<img src="{url}" alt="meme" />'
         ticker_html += "</div></div>"
 
-        st.markdown("### 🎬 Meme Express")
+        st.markdown("### 🎬 Live Meme Ticker")
         st.markdown(ticker_html, unsafe_allow_html=True)
-
-  
 
 if __name__ == "__main__":
     main()
