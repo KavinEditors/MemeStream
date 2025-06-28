@@ -6,7 +6,6 @@ import re
 import random
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 
 # ✅ Smart filter for real memes only
 def is_meme_image(url):
@@ -63,13 +62,14 @@ def get_bing_memes(query):
 # ✅ Meme Mood Chart (vertical)
 def show_mood_chart():
     st.markdown("### 😎 Meme Mood")
-    moods = ['Funny 🤣', 'Sad 😭', 'Angry 😠', 'Weird 🌀']
-    values = np.random.randint(10, 100, size=4)
-
-    fig, ax = plt.subplots()
-    ax.bar(moods, values, color='skyblue')
-    ax.set_title('📊 Meme Mood')
-    st.pyplot(fig)
+    mood_labels = ["Funny 🤣", "Sad 😭", "Angry 😠", "Weird 🌀"]
+    raw = np.random.rand(4)
+    percentages = (raw / raw.sum() * 100).round().astype(int)
+    mood_df = pd.DataFrame({
+        "Mood": mood_labels,
+        "Percentage": percentages
+    })
+    st.bar_chart(mood_df.set_index("Mood"), use_container_width=True)
 
 # ✅ Music Meme Ticker
 def show_music_meme_ticker():
