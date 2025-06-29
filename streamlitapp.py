@@ -7,7 +7,6 @@ import random
 import pandas as pd
 import numpy as np
 
-# ✅ Smart filter for real memes only
 def is_meme_image(url):
     meme_hosts = ["imgur", "me.me", "imgflip", "9gag", "memedroid"]
     keywords = ["meme", "funny", "humor", "caption", "template"]
@@ -17,7 +16,6 @@ def is_meme_image(url):
         return True
     return False
 
-# ✅ Imgur meme fetcher
 def get_imgur_memes(query):
     headers = {"User-Agent": "Mozilla/5.0"}
     encoded_query = urllib.parse.quote_plus(query + " meme")
@@ -44,7 +42,6 @@ def get_imgur_memes(query):
         st.warning(f"⚠️ Imgur error: {e}")
         return []
 
-# ✅ Bing fallback meme fetcher
 def get_bing_memes(query):
     headers = {"User-Agent": "Mozilla/5.0"}
     encoded_query = urllib.parse.quote_plus(query + " meme")
@@ -59,7 +56,6 @@ def get_bing_memes(query):
         st.warning(f"⚠️ Bing error: {e}")
         return []
 
-# ✅ Meme Mood Chart (vertical)
 def show_mood_chart():
     st.markdown("### 😎 Meme Mood")
     mood_labels = ["Funny 🤣", "Sad 😭", "Angry 😠", "Weird 🌀"]
@@ -71,7 +67,6 @@ def show_mood_chart():
     })
     st.bar_chart(mood_df.set_index("Mood"), use_container_width=True)
 
-# ✅ Random Meme Ticker (Live)
 def show_random_meme_ticker():
     random_memes = get_imgur_memes("funny")[:14]
     if random_memes:
@@ -107,33 +102,11 @@ def show_random_meme_ticker():
         for url in random_memes:
             ticker_html += f'<img src="{url}" alt="random meme" />'
         ticker_html += "</div></div>"
-
         st.markdown("### 🐟 Meme Parade")
         st.markdown(ticker_html, unsafe_allow_html=True)
 
-# ✅ MemeStream main app
 def main():
     st.set_page_config(page_title="MemeStream", page_icon="🌊", layout="wide")
-
-    # Review button top right
-    st.markdown("""
-        <style>
-            .review-button {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background-color: #ff4b4b;
-                color: white;
-                padding: 10px 18px;
-                border-radius: 5px;
-                text-decoration: none;
-                font-weight: bold;
-                z-index: 9999;
-            }
-        </style>
-        <a href="https://www.menti.com/alsp2dxw9tx9" class="review-button" target="_blank">⭐ Review</a>
-    """, unsafe_allow_html=True)
-
     st.title("MemeStream - Fish the meme you like...")
 
     if "search_query" not in st.session_state:
@@ -162,7 +135,6 @@ def main():
         else:
             st.warning("😕 No memes found. Try another keyword.")
     else:
-        # Only show mood chart and ticker when no search is active
         col1, col2 = st.columns([1, 2])
         with col1:
             show_mood_chart()
