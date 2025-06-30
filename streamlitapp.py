@@ -141,7 +141,7 @@ def main():
         with col2:
             st.subheader("🔥 Trending Meme Topics")
             trending_topics = ["Random", "Surprise me", "Cat memes", "Distracted dog",
-                               "NFSW", "Shaun The Sheep", "Change My Mind", "sus world", "MafuMafu"]
+                               "Rocket", "Shaun The Sheep", "Change My Mind", "sus world", "MafuMafu"]
             cols = st.columns(3)
             for i, topic in enumerate(trending_topics):
                 with cols[i % 3]:
