@@ -6,6 +6,13 @@ import re
 import random
 import pandas as pd
 import numpy as np
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 
 def is_meme_image(url):
     meme_hosts = ["imgur", "me.me", "imgflip", "9gag", "memedroid"]
