@@ -15,11 +15,12 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Gemini caption generator
+# Gemini caption generator (FREE model)
 def generate_gemini_caption(image_url):
     try:
+        model = genai.GenerativeModel("models/gemini-pro")  # Free model
         prompt = f"Write a funny, witty, or sarcastic meme caption for the image at this URL:\n{image_url}"
-        response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
+        response = model.generate_content(prompt)
         return response.text.strip()
     except Exception as e:
         return f"[Caption Error: {e}]"
