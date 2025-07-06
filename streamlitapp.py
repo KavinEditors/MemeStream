@@ -6,24 +6,6 @@ import re
 import random
 import pandas as pd
 import numpy as np
-import os
-from dotenv import load_dotenv
-import google.generativeai as genai
-
-# Load API key from .env
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Gemini caption generator (FREE model)
-def generate_gemini_caption(image_url):
-    try:
-        model = genai.GenerativeModel("models/gemini-pro")  # Free model
-        prompt = f"Write a funny, witty, or sarcastic meme caption for the image at this URL:\n{image_url}"
-        response = model.generate_content(prompt)
-        return response.text.strip()
-    except Exception as e:
-        return f"[Caption Error: {e}]"
 
 # Check if image is meme-like
 def is_meme_image(url):
@@ -148,17 +130,10 @@ def main():
             meme_urls = get_bing_memes(query_to_search)
 
         if meme_urls:
-            st.info("🧠 Generating AI captions for first few memes...")
             cols = st.columns(3)
             for i, url in enumerate(meme_urls):
                 with cols[i % 3]:
                     st.image(url, use_container_width=True)
-                    if i < 6:  # Limit captioning to first 6 memes
-                        with st.spinner("🧠 Gemini captioning..."):
-                            caption = generate_gemini_caption(url)
-                        st.caption(f"📝 {caption}")
-                    else:
-                        st.caption("📝 (Caption not generated to save API calls)")
         else:
             st.warning("😕 No memes found. Try another keyword.")
     else:
