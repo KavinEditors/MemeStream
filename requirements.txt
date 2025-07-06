@@ -1,14 +1,7 @@
 streamlit
 requests
 beautifulsoup4
-pandas
-numpy
-beautifulsoup4
-matplotlib
-streamlit
-requests
-beautifulsoup4
-pandas
-numpy
 google-generativeai
 python-dotenv
+pandas
+numpy
