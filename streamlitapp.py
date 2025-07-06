@@ -6,23 +6,31 @@ import re
 import random
 import pandas as pd
 import numpy as np
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
 import google.generativeai as genai
 
+# Load API key from .env
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
+# Gemini caption generator
+def generate_gemini_caption(image_url):
+    try:
+        prompt = f"Write a funny, witty, or sarcastic meme caption for the image at this URL:\n{image_url}"
+        response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        return f"[Caption Error: {e}]"
+
+# Check if image is meme-like
 def is_meme_image(url):
     meme_hosts = ["imgur", "me.me", "imgflip", "9gag", "memedroid"]
     keywords = ["meme", "funny", "humor", "caption", "template"]
-    if any(host in url.lower() for host in meme_hosts):
-        return True
-    if any(word in url.lower() for word in keywords):
-        return True
-    return False
+    return any(host in url.lower() for host in meme_hosts) or any(word in url.lower() for word in keywords)
 
+# Scrape memes from Imgur
 def get_imgur_memes(query):
     headers = {"User-Agent": "Mozilla/5.0"}
     encoded_query = urllib.parse.quote_plus(query + " meme")
@@ -49,6 +57,7 @@ def get_imgur_memes(query):
         st.warning(f"⚠️ Imgur error: {e}")
         return []
 
+# Scrape memes from Bing
 def get_bing_memes(query):
     headers = {"User-Agent": "Mozilla/5.0"}
     encoded_query = urllib.parse.quote_plus(query + " meme")
@@ -63,6 +72,7 @@ def get_bing_memes(query):
         st.warning(f"⚠️ Bing error: {e}")
         return []
 
+# Mood chart
 def show_mood_chart():
     st.markdown("### 😎 Meme Mood")
     mood_labels = ["Funny 🤣", "Sad 😭", "Angry 😠", "Weird 🌀"]
@@ -74,6 +84,7 @@ def show_mood_chart():
     })
     st.bar_chart(mood_df.set_index("Mood"), use_container_width=True)
 
+# Meme ticker
 def show_random_meme_ticker():
     random_memes = get_imgur_memes("funny")[:14]
     if random_memes:
@@ -112,6 +123,7 @@ def show_random_meme_ticker():
         st.markdown("### 🐟 Meme Parade")
         st.markdown(ticker_html, unsafe_allow_html=True)
 
+# Main app
 def main():
     st.set_page_config(page_title="MemeStream", page_icon="🌊", layout="wide")
     st.title("MemeStream - Fish the meme you like...")
@@ -135,10 +147,17 @@ def main():
             meme_urls = get_bing_memes(query_to_search)
 
         if meme_urls:
+            st.info("🧠 Generating AI captions for first few memes...")
             cols = st.columns(3)
             for i, url in enumerate(meme_urls):
                 with cols[i % 3]:
-                    st.image(url, use_container_width=True, clamp=False)
+                    st.image(url, use_container_width=True)
+                    if i < 6:  # Limit captioning to first 6 memes
+                        with st.spinner("🧠 Gemini captioning..."):
+                            caption = generate_gemini_caption(url)
+                        st.caption(f"📝 {caption}")
+                    else:
+                        st.caption("📝 (Caption not generated to save API calls)")
         else:
             st.warning("😕 No memes found. Try another keyword.")
     else:
